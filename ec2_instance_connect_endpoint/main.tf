@@ -1,3 +1,4 @@
+/* ----- VPC ----- */
 resource "aws_vpc" "vpc" {
   cidr_block = "172.16.0.0/16"
 
@@ -15,10 +16,11 @@ resource "aws_subnet" "private_subnet" {
   }
 }
 
-resource "aws_route_table" "name" {
+resource "aws_route_table" "route_table" {
   vpc_id = aws_vpc.vpc.id
 }
 
+/* ----- EC2 Instance Connect Endpoint ----- */
 resource "aws_security_group" "eice_sg" {
   name        = "${var.project_name}_eice_sg"
   description = "Security Group for EC2 Instance Connect Endpoint"
@@ -49,13 +51,7 @@ resource "aws_ec2_instance_connect_endpoint" "instance_connect_endpoint" {
   }
 }
 
-resource "aws_instance" "instance" {
-  ami             = var.instance_ami
-  instance_type   = var.instance_type
-  subnet_id       = aws_subnet.private_subnet.id
-  security_groups = [aws_security_group.eice_sg.id]
-}
-
+/* ----- EC2 Instance ----- */
 resource "aws_security_group" "instance_sg" {
   name        = "${var.project_name}_instance_sg"
   description = "Security Group for EC2 Instance"
@@ -74,4 +70,11 @@ resource "aws_security_group" "instance_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+resource "aws_instance" "instance" {
+  ami             = var.instance_ami
+  instance_type   = var.instance_type
+  subnet_id       = aws_subnet.private_subnet.id
+  security_groups = [aws_security_group.instance_sg.id]
 }
