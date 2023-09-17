@@ -125,6 +125,7 @@ resource "aws_rds_cluster" "rds_cluster" {
 
   engine         = var.db_engine
   engine_version = var.db_engine_version
+  allow_major_version_upgrade = true
 
   database_name   = var.db_database_name
   master_username = var.db_user
@@ -132,6 +133,7 @@ resource "aws_rds_cluster" "rds_cluster" {
 
   // for dev
   skip_final_snapshot = true
+  apply_immediately = true
 }
 
 resource "aws_rds_cluster_instance" "rds_cluster_instance" {
